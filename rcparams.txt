@@ -19,7 +19,7 @@ ytick.color,'k'
 axes.labelcolor,'k'
 axes.labelcolor,'k'
 axes.edgecolor,'k'
-figure.facecolor,'none'
+figure.facecolor,'w'
 legend.facecolor,'none'
 figure.labelsize,x-large
 figure.titlesize,x-large
