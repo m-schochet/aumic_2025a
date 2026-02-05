@@ -2,6 +2,7 @@
 
 from glob import glob
 import pathlib
+from math import pi
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -143,7 +144,7 @@ def model_sine2(xes, omega, amp, phase, amp2, phase2, offset):
         list: f(x), the value of the 2-sine wave model at each x-value in X.
     """
     
-    return amp * np.sin(omega * xes + phase) + amp2 * np.sin(omega/2 * xes + phase2) + offset
+    return amp * np.sin(2*pi* omega * xes + phase) + amp2 * np.sin(pi * omega * xes + phase2) + offset
 popt, pcov = curve_fit(model_sine2, x.tolist(), y,
                   p0=parameters_2term,
                   maxfev=50000)
@@ -200,7 +201,7 @@ for num, info in enumerate(zip([HSTDAYS, CHEOPSDAYS, JWSTDAYS],
 
 # Now the TESS Model and data
 model_times = np.linspace(np.min(RPUNFOLDEDLC.time.value), \
-                          np.min(stella_lc_og.time.value), 20000, rasterized=True)
+                          np.min(stella_lc_og.time.value), 20000)
 model = ax1.plot(model_times, model_sine2(model_times, *popt), \
                  c='b', label='TESS 2-sine Fit', rasterized=True)
 stella_lc_og.scatter(ax=ax1, s=100, c="#353434", \
