@@ -1,9 +1,12 @@
+.DS_Store
 unsure/*
-2_analysis/lco_photometry/for-meir.ipyn
-2_analysis/lco_photometry/.DS_Store
 2_analysis/.DS_Store
 2_analysis/tess/.DS_Store
-.DS_Store
+2_analysis/lco_photometry/.DS_Store
+2_analysis/lco_photometry/for-meir.ipynb
 2_analysis/lco_photometry/gaussian_sampler_state.pkl
 2_analysis/lco_photometry/working_emcee.ipynb
 2_analysis/lco_photometry/working_emcee2.ipynb
+2_analysis/lco_photometry/cornermcmc.ipynb
+2_analysis/lco_photometry/corners/*
+2_analysis/lco_photometry/figures/fits/*
