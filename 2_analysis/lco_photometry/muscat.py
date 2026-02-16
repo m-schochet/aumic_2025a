@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pathlib
 import os
 from astropy.table import Table
-from astropy.io import ascii
+from astropy.io import ascii as asc
 from lco_functions import muscat_lks
 
 
@@ -25,7 +25,7 @@ removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 700, 0, 0],  [0,
 lightcurves = []
 for vars in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
     filt, filelist, removelist = vars
-    filt_objs = [ascii.read(f) for f in filelist]
+    filt_objs = [asc.read(f) for f in filelist]
     [filt_objs[i] == filt_objs[i].sort(keys='rel_flux_T1') for i in range(len(filt_objs))]
     for index, j in enumerate(removelist):
         filt_objs[index] = filt_objs[index][j:]

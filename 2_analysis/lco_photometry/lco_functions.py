@@ -121,7 +121,7 @@ def find_lost(datalist, filter_type):
     return(filter_type)
 
 
-def binned_lc(tlist, flist, elist):
+def binned_lc(tlist, flist, elist, norm=False):
     """Bin a light curve (where a new day is asserted if an image timestamp occurs
     0.45 JD = 10.8hrs after the previous one
 
@@ -129,7 +129,7 @@ def binned_lc(tlist, flist, elist):
         tlist (list-like): light curve times
         flist (list-like): light curve fluxes
         elist (list-like): flux errors
-
+        norm (bool, optional): Whether to normalize the light curve. Defaults to False.
     Returns:
         final (lk.LightCurve): binned light curve
         folded_fin (lk.LightCurve): phase-folded and binned light curve
@@ -157,5 +157,7 @@ def binned_lc(tlist, flist, elist):
     elist = [val for val in returned_binnedlc['errs'].values]
     tlist = [val for val in returned_binnedlc['times'].values]
     final = lk.LightCurve(time=tlist, flux=flist, flux_err=elist)
+    if norm:
+        final = final.normalize()
     folded_fin = final.fold(4.86, epoch_time=2400000, epoch_phase=1)
     return final, folded_fin
