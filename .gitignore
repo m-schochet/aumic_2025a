@@ -10,9 +10,5 @@ unsure/*
 2_analysis/lco_photometry/cornermcmc.ipynb
 2_analysis/lco_photometry/corners/*
 2_analysis/lco_photometry/figures/fits/*
-2_analysis/lco_photometry/mcmc/*
-2_analysis/lco_photometry/muscat_contrasts.py
-2_analysis/lco_photometry/sinistro_contrasts.ipynb
-2_analysis/lco_photometry/muscat_mcmc.py
-2_analysis/lco_photometry/sinistro_mcmc.ipynb
-2_analysis/lco_photometry/sinistro_mcmc.py
+2_analysis/lco_photometry/mcmc/joint_contrasts/*
+2_analysis/lco_photometry/mcmc/mcmc_joint_but_sep.ipynb

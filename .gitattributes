@@ -1,0 +1,7 @@
+2_analysis/lco_photometry/mcmc/sinistro_runs/mcmc_state_job79_g.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/sinistro_runs/mcmc_state_job79_i.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/sinistro_runs/mcmc_state_job79_r.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/muscat_runs/mcmc_state_job79_g.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/muscat_runs/mcmc_state_job79_i.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/muscat_runs/mcmc_state_job79_r.pkl filter=lfs diff=lfs merge=lfs -text
+2_analysis/lco_photometry/mcmc/muscat_runs/mcmc_state_job79_z.pkl filter=lfs diff=lfs merge=lfs -text
