@@ -84,7 +84,7 @@ def muscat_lks(filelist, normalize = False):
         return lk.LightCurve(time=d, flux=fl, flux_err=err).normalize()
     return lk.LightCurve(time=d, flux=fl, flux_err=err)
 
-def find_lost(datalist, filter_type):
+def find_lost(datalist, filter_type, telescope='sinitro'):
     """ Finds the files that were not used in the cleaned AIJ photometry
 
     NOTE: Requires access to original .fits files on external drive, here
@@ -93,6 +93,7 @@ def find_lost(datalist, filter_type):
     Args:
         datalist (pd.DataFrame): list of files with a 'Label" column
         filter_type (str): 'gp', 'ip', 'rp', 'U', 'B', V'
+        telescope (str): 'sinistro' or 'muscat;'
     """ 
     files_goodAIJ = sorted([str(val) for val in list(datalist['Label'])])
     AIJ_FILES = pd.DataFrame({"files": files_goodAIJ})
@@ -114,11 +115,22 @@ def find_lost(datalist, filter_type):
     path = pathlib.Path('bad_files/')
     if not os.path.exists(path):
         path.mkdir(parents=True, exist_ok=True)
-    with open(f'bad_files/bad_{filter_type}files.txt', 'w') as f:
-        for item in badfiles:
-            new_string = item.replace("aligned_", "")
-            f.write(new_string + '\n')
-    return(filter_type)
+        if not os.path.exists(os.path.join(path, 'sinistro')):
+            os.path.join(path, 'sinistro').mkdir(parents=True, exist_ok=True)
+        if not os.path.exists(os.path.join(path, 'muscat')):
+            os.path.join(path, 'muscat').mkdir(parents=True, exist_ok=True)
+    if telescope=='sinistro':
+        with open(f'bad_files/sinistro/bad_{filter_type}files.txt', 'w') as f:
+            for item in badfiles:
+                new_string = item.replace("aligned_", "")
+                f.write(new_string + '\n')
+        return(filter_type)
+    else:
+        with open(f'bad_files/muscat/bad_{filter_type}files.txt', 'w') as f:
+            for item in badfiles:
+                #new_string = item.replace("aligned_", "")
+                f.write(item + '\n')
+        return(filter_type)
 
 
 def binned_lc(tlist, flist, elist, norm=False):

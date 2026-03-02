@@ -28,8 +28,8 @@ a specific file is considered `bad`
 Note that this code requires a drive that holds all the original 
 .fits files inside to access"""
 
-find_lost(IDATA, "ip")
-find_lost(GDATA, "gp")
-find_lost(RDATA, "rp")
-find_lost(UDATA, "U")
-find_lost(BDATA, "B")
+find_lost(IDATA, "ip", 'sinistro')
+find_lost(GDATA, "gp", 'sinistro')
+find_lost(RDATA, "rp", 'sinistro')
+find_lost(UDATA, "U", 'sinistro')
+find_lost(BDATA, "B", 'sinistro')
