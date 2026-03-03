@@ -20,7 +20,7 @@ set_rcparams()
 
 path = pathlib.Path('figures/sinistro/')
 if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True) 
+    path.mkdir(parents=True, exist_ok=True)
 
 plt.style.use('dark_background')
 
@@ -73,7 +73,8 @@ colors = ['#0B6E4F', '#F9DB6D', '#764248', "#004BA8", "#6CCFF6", "#FFFFFF"]
 fig, ax = plt.subplots(figsize=(16, 8))
 
 for fold, col, lab in zip(foldedlcs, colors, labs):
-    fold.normalize().errorbar(ax=ax, fmt='o', elinewidth=1, capsize=3, label=lab, c=col, rasterized=True)
+    fold.normalize().errorbar(ax=ax, fmt='o', elinewidth=1, \
+                              capsize=3, label=lab, c=col, rasterized=True)
 
 ax.legend()
 fig.savefig('figures/sinistro/sinistro_folded_binned_lcs.png', dpi=300)
@@ -97,7 +98,8 @@ for fold, col, lab in zip(foldedlcs, colors, labs):
     fold.normalize().errorbar(ax=ax1, fmt='o', elinewidth=1, capsize=3,  c=col, rasterized=True)
 
 for binned, col, lab in zip(binnedlcs, colors, labs):
-    binned.normalize().errorbar(ax=ax2, fmt='o', elinewidth=1, capsize=3, label=lab, c=col, rasterized=True)
+    binned.normalize().errorbar(ax=ax2, fmt='o', elinewidth=1,\
+                                 capsize=3, label=lab, c=col, rasterized=True)
 
 ax1.set_xlabel('Time [MJD]')
 ax2.set_xlabel('Time [JD-2400000]')

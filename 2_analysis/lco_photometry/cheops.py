@@ -51,7 +51,7 @@ def combine_cheops(samedate_datalist):
 
 path = pathlib.Path('figures/cheops/')
 if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True) 
+    path.mkdir(parents=True, exist_ok=True)
 
 combined_cheops_531 = combine_cheops(may_31).normalize()
 combined_cheops_68 = combine_cheops(june_8).normalize()

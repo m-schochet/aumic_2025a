@@ -1,8 +1,6 @@
 """Make Figure 1 from Schochet & Feinstein (in prep.)"""
-
 from glob import glob
 import pathlib
-from math import pi
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,7 +8,7 @@ from matplotlib import gridspec
 import numpy as np
 import lightkurve as lk
 from astropy.table import Table
-from astropy.io import fits, ascii as asc
+from astropy.io import ascii as asc
 from scipy.optimize import curve_fit
 from lco_functions import file_len, file_load, create_lc, muscat_lks
 
@@ -25,14 +23,14 @@ def set_rcparams():
             plt.rcParams[tab['key'][i]] = str(tab['val'][i])
 set_rcparams()
 
-HSTDAYS = [(2460809.7770374413, 2460810.10588031), (2460818.233912621, 2460818.5666751266), (2460826.4921415113, 2460826.8228429067),
-(2460835.2038892913, 2460835.5353429066)]
+HSTDAYS = [(2460809.7770374413, 2460810.10588031), (2460818.233912621, 2460818.5666751266), \
+           (2460826.4921415113, 2460826.8228429067), (2460835.2038892913, 2460835.5353429066)]
 
-CHEOPSDAYS = [(2460827.4291018597, 2460827.738845379), (2460826.6806421145, 2460827.381607217),
-(2460834.964947009, 2460835.133426169), (2460835.1618256704, 2460835.817190319)]
+CHEOPSDAYS = [(2460827.4291018597, 2460827.738845379), (2460826.6806421145, 2460827.381607217), \
+              (2460834.964947009, 2460835.133426169), (2460835.1618256704, 2460835.817190319)]
 
-JWSTDAYS = [(2460818.3330352814, 2460818.7497526538), (2460835.259565584, 2460835.676293359),
-(2460809.8923711404, 2460810.3091083206), (2460826.7961735446, 2460827.21288887)]   
+JWSTDAYS = [(2460818.3330352814, 2460818.7497526538), (2460835.259565584, 2460835.676293359), \
+            (2460809.8923711404, 2460810.3091083206), (2460826.7961735446, 2460827.21288887)]
 
 TESS95 = [(2460881, 2460907)]
 
@@ -143,8 +141,8 @@ def model_sine2(xes, omega, amp, phase, amp2, phase2, offset):
     Returns:
         list: f(x), the value of the 2-sine wave model at each x-value in X.
     """
-    
-    return amp * np.sin(2*pi* omega * xes + phase) + amp2 * np.sin(pi * omega * xes + phase2) + offset
+
+    return amp*np.sin(omega * xes + phase) + amp2*np.sin(omega/2 * xes + phase2) + offset
 popt, pcov = curve_fit(model_sine2, x.tolist(), y,
                   p0=parameters_2term,
                   maxfev=50000)
@@ -166,11 +164,11 @@ ax.legend(markerscale=10)
 
 path = pathlib.Path('figures')
 if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True) 
+    path.mkdir(parents=True, exist_ok=True)
 
 path2 = pathlib.Path('figures/tess')
 if not os.path.exists(path2):
-    path2.mkdir(parents=True, exist_ok=True) 
+    path2.mkdir(parents=True, exist_ok=True)
 
 fig.savefig('figures/tess/2sine_fit_tess.png', dpi=300)
 plt.clf()
@@ -208,7 +206,8 @@ stella_lc_og.scatter(ax=ax1, s=100, c="#353434", \
                      label='TESS S95', alpha=0.25, rasterized=True)
 
 # LCO data
-RPUNFOLDEDLC.scatter(ax=ax1, s=100,  label='Binned r\' (LCO Sinistro)', c="#D0B658", rasterized=True)
+RPUNFOLDEDLC.scatter(ax=ax1, s=100,  label='Binned r\' (LCO Sinistro)', \
+                     c="#D0B658", rasterized=True)
 RPUNBINNED.scatter(ax=ax1, s=100, label='Unbinned r\'', alpha=0.5, c="#D0B658", rasterized=True)
 ZSLC_MUSC.scatter(ax=ax1, s=100, label='z\' (LCO MuSCAT)', c="#BA0016", rasterized=True)
 

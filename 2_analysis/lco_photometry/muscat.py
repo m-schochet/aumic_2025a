@@ -1,8 +1,8 @@
 """No preprocessing LCO MuSCAT light curve creation and plotting."""
-from glob import glob
-import matplotlib.pyplot as plt
 import pathlib
 import os
+from glob import glob
+import matplotlib.pyplot as plt
 from astropy.table import Table
 from astropy.io import ascii as asc
 from lco_functions import muscat_lks
@@ -20,13 +20,14 @@ def set_rcparams():
 set_rcparams()
 
 COMMONPATH = '../../data/lco_aumic/'
-G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) for FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
+G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) \
+              for FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
 removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 700, 0, 0],  [0, 0, 12, 0, 0, 0]]
 lightcurves = []
-for vars in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
-    filt, filelist, removelist = vars
+for variablelist in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
+    filt, filelist, removelist = variablelist
     filt_objs = [asc.read(f) for f in filelist]
-    [filt_objs[i] == filt_objs[i].sort(keys='rel_flux_T1') for i in range(len(filt_objs))]
+    [filt_objs[ind] == filt_objs[ind].sort(keys='rel_flux_T1') for ind in range(len(filt_objs))]
     for index, j in enumerate(removelist):
         filt_objs[index] = filt_objs[index][j:]
     lightcurves.append(muscat_lks(filt_objs, normalize=True))

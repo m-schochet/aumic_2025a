@@ -1,12 +1,11 @@
+"""Run MCMC sampler to get sine-model amplitudes from MuSCAT data"""
 from glob import glob
 import os
 import pickle
 import emcee
-import lightkurve as lk
 import matplotlib.pyplot as plt
 from astropy.io import ascii as asc
 import numpy as np
-import pandas as pd
 from mcmcfuncs import muscat_lks
 
 
@@ -16,17 +15,20 @@ if not os.path.exists("muscat_im"):
     os.makedirs("muscat_im/", exist_ok=True)
 if not os.path.exists("muscat_runs"):
     os.makedirs("muscat_runs", exist_ok=True)
-    
-path = "../../../data/tessmcmc"
-pathlist = sorted(glob(os.path.join(path, "*")))
 
-path59, path79, path97 = pathlist
+PATH = "../../../data/tessmcmc"
+pathlist = sorted(glob(os.path.join(PATH, "*")))
+
+PATH59, PATH79, PATH97 = pathlist
+del PATH, pathlist
+
 COMMONPATH = '../../../data/lco_aumic/'
-G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) for FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
+G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) for \
+              FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
 removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0],  [0, 0, 12, 0, 0, 0]]
 lightcurves = []
-for vars in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
-    filt, filelist, removelist = vars
+for the_variables in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
+    filt, filelist, removelist = the_variables
     filt_objs = [asc.read(f) for f in filelist]
     [filt_objs[i] == filt_objs[i].sort(keys='rel_flux_T1') for i in range(len(filt_objs))]
     for index, j in enumerate(removelist):
@@ -34,6 +36,7 @@ for vars in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
     lightcurves.append(muscat_lks(filt_objs, normalize=True))
 GPLC, RPLC, IPLC, ZSLC = lightcurves
 
+del COMMONPATH, G, R, I, Z, removals
 
 def emcee_func(theta, asserted, xlist):
     """A 2-sine wave function with parameters for variable phase, total offset, and frequency.
@@ -61,11 +64,11 @@ def main(path, num):
             p50 = percentiles[:, i]
             lister.append(p50)
     freq, a1given, a2given, phi_1, phi_2 = [val[0] for val in lister]
-    print(lister)
     asserted_params = [freq, phi_1, phi_2]
     model_avg = 0
     for filt, data in zip(['g', 'r', 'i', 'z'], [GPLC, RPLC, IPLC, ZSLC]):
-        xs, ys, errs = data.time.value, data.flux.value - np.median(data.flux.value), data.flux_err.value
+        xs, ys, errs = data.time.value, \
+            data.flux.value - np.median(data.flux.value), data.flux_err.value
         amp1_mu, amp2_mu, a_sigs = a1given, a2given, 0.1
 
         priors = [(amp1_mu, a_sigs),
@@ -73,9 +76,9 @@ def main(path, num):
 
         def logprior(theta):
             lprior = 0
-            for i in range(len(theta)):
-                if theta[i] is not None or theta[i] is not np.nan:
-                    lprior -= 0.5*((theta[i] - priors[i][0]) / priors[i][1])**2
+            for i, val in enumerate(theta):
+                if val is not None or val is not np.nan:
+                    lprior -= 0.5*((val - priors[i][0]) / priors[i][1])**2
                 else:
                     return -np.inf
             return lprior
@@ -110,6 +113,7 @@ def main(path, num):
             return sampler, pos, prob, state
 
         sampler, pos, prob, state = run_it(p0,nwalkers,niter,ndim,lnprob,data)
+        del pos, prob
         flat_samples = sampler.get_chain(thin=15, flat=True)
 
         # 2. Calculate 14th, 50th (median), and 86th percentiles for each parameter
@@ -131,7 +135,8 @@ def main(path, num):
         best_fit_model_plot = emcee_func(lister, asserted_params, xlist)
         best_fit_model_comparison = emcee_func(lister, asserted_params, xs)
 
-        plt.plot(xlist, best_fit_model_plot, c='orange', label='Highest Likelihood MCMC Model', rasterized=True)
+        plt.plot(xlist, best_fit_model_plot, c='orange', \
+                 label='Highest Likelihood MCMC Model', rasterized=True)
         plt.scatter(xs, ys, c='b', label=f'MuSCAT LightCurve {filt}', rasterized=True)
 
         plt.xlabel('Time')
@@ -140,9 +145,10 @@ def main(path, num):
         plt.savefig(f"muscat_im/emceefit_{num}_{filt}", dpi=300)
         plt.clf()
         plt.close()
-        
+
         print(f"Finished MCMC for {filt} filter of job {num}.")
         model_avg += np.abs(np.median(ys - best_fit_model_comparison))
-    print(f'Model ({num}) average difference (real fluxes - model) across all 4 filters is: {model_avg}, or {model_avg/4} if averaged\n')
+    print(f'Model ({num}) average difference (real fluxes - model) across all 4 filters is: \
+          {model_avg}, or {model_avg/4} if averaged\n')
 
-main(path79, 79)
+main(PATH79, 79)

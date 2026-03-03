@@ -1,3 +1,6 @@
+"""All relevant functions that are used several times in our analysis 
+python scripts"""
+
 from glob import glob
 import os
 import pathlib
@@ -78,9 +81,9 @@ def muscat_lks(filelist, normalize = False):
     fluxerr_list = [fluxerr['rel_flux_err_T1'].tolist() for fluxerr in filelist]
     for day, flux, error in zip(day_list, flux_list, fluxerr_list):
         d = d + day
-        fl = fl + flux 
+        fl = fl + flux
         err = err + error
-    if normalize==True:
+    if normalize is True:
         return lk.LightCurve(time=d, flux=fl, flux_err=err).normalize()
     return lk.LightCurve(time=d, flux=fl, flux_err=err)
 
@@ -94,23 +97,23 @@ def find_lost(datalist, filter_type, telescope='sinitro'):
         datalist (pd.DataFrame): list of files with a 'Label" column
         filter_type (str): 'gp', 'ip', 'rp', 'U', 'B', V'
         telescope (str): 'sinistro' or 'muscat;'
-    """ 
-    files_goodAIJ = sorted([str(val) for val in list(datalist['Label'])])
-    AIJ_FILES = pd.DataFrame({"files": files_goodAIJ})
-    if(filter_type=='U'):
-        files_preaij = sorted(glob(f"/Volumes/harddrive/U_notwirl/*.fits.fz"))
-    elif(filter_type=='B'):
-        files_preaij = sorted(glob(f"/Volumes/harddrive/B_notwirl/*.fits.fz"))
+    """
+    files_good_aij = sorted([str(val) for val in list(datalist['Label'])])
+    aij_files = pd.DataFrame({"files": files_good_aij})
+    if filter_type=='U':
+        files_preaij = sorted(glob("/Volumes/harddrive/U_notwirl/*.fits.fz"))
+    elif filter_type=='B':
+        files_preaij = sorted(glob("/Volumes/harddrive/B_notwirl/*.fits.fz"))
     else:
         files_preaij = sorted(glob(f"/Volumes/harddrive/{filter_type}/aligned/*.fits"))
-    
-    LCO_FILES = pd.DataFrame({"files": files_preaij})
-    LCO_FILENAMES = [str(os.path.basename(val)) for val in (LCO_FILES['files'])]
-    LCO_FILENAMES_PD = pd.DataFrame({"files": LCO_FILENAMES})
-    combined = [bool(np.isnan(val)) for val in 
-                    LCO_FILENAMES_PD['files'].value_counts() - AIJ_FILES['files'].value_counts()]
 
-    badfiles = [str(val) for val in LCO_FILES[combined]['files'].values.tolist()]
+    lco_files = pd.DataFrame({"files": files_preaij})
+    lco_filenames = [str(os.path.basename(val)) for val in (lco_files['files'])]
+    lco_filenames_pd = pd.DataFrame({"files": lco_filenames})
+    combined = [bool(np.isnan(val)) for val in \
+                    lco_filenames_pd['files'].value_counts() - aij_files['files'].value_counts()]
+
+    badfiles = [str(val) for val in lco_files[combined]['files'].values.tolist()]
     print('The number of bad files in the', filter_type, 'filter are:', len(badfiles))
     path = pathlib.Path('bad_files/')
     if not os.path.exists(path):
@@ -124,13 +127,12 @@ def find_lost(datalist, filter_type, telescope='sinitro'):
             for item in badfiles:
                 new_string = item.replace("aligned_", "")
                 f.write(new_string + '\n')
-        return(filter_type)
-    else:
-        with open(f'bad_files/muscat/bad_{filter_type}files.txt', 'w') as f:
-            for item in badfiles:
-                #new_string = item.replace("aligned_", "")
-                f.write(item + '\n')
-        return(filter_type)
+        return filter_type
+    with open(f'bad_files/muscat/bad_{filter_type}files.txt', 'w') as f:
+        for item in badfiles:
+            #new_string = item.replace("aligned_", "")
+            f.write(item + '\n')
+    return filter_type
 
 
 def binned_lc(tlist, flist, elist, norm=False):
@@ -152,22 +154,24 @@ def binned_lc(tlist, flist, elist, norm=False):
         if num==0:
             flux_counter+=flist[num]
             date_counter+=dates
-            error_counter+=elist[num]     
+            error_counter+=elist[num]
             num_counter+=1
         else:
-            datediffs = np.diff(tlist) 
+            datediffs = np.diff(tlist)
             if datediffs[num-1] > 0.45:
-                if ((flux_counter!=0) & (num_counter!=0)):
-                    returned_binnedlc.loc[len(returned_binnedlc)] = [flux_counter/num_counter, date_counter/num_counter, error_counter/num_counter]
+                if (flux_counter!=0) and (num_counter!=0):
+                    returned_binnedlc.loc[len(returned_binnedlc)] = \
+                        [flux_counter/num_counter, date_counter/num_counter, \
+                         error_counter/num_counter]
                 date_counter, flux_counter, num_counter, error_counter  = 0, 0, 0, 0
             else:
                 flux_counter+=flist[num]
                 date_counter+=dates
-                error_counter+=elist[num]     
+                error_counter+=elist[num]
                 num_counter+=1
-    flist = [val for val in returned_binnedlc['flux'].values]
-    elist = [val for val in returned_binnedlc['errs'].values]
-    tlist = [val for val in returned_binnedlc['times'].values]
+    flist = list(returned_binnedlc['flux'].values)
+    elist = list(returned_binnedlc['errs'].values)
+    tlist = list(returned_binnedlc['times'].values)
     final = lk.LightCurve(time=tlist, flux=flist, flux_err=elist)
     if norm:
         final = final.normalize()

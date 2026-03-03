@@ -1,4 +1,6 @@
-"""This notebook takes our output AIJ Sinistro light curves and plots them with minimal data cleaning"""
+"""This notebook takes our output AIJ Sinistro light curves 
+and plots them with minimal data cleaning"""
+
 import os
 import pathlib
 import matplotlib.pyplot as plt
@@ -23,7 +25,8 @@ paths = sorted([os.path.join(COMMONPATH, specific) for \
 # output order is B, U, V, gp, ip, rp
 lens = [file_len(path) for path in [paths[1], paths[4]]]
 datas = []
-for file, cleans in zip(paths, [[None, None], [2, lens[0]-13], [None, None], [2, None], [28, lens[1]-1], [1, None]]):
+for file, cleans in zip(paths, [[None, None], [2, lens[0]-13], \
+                                [None, None], [2, None], [28, lens[1]-1], [1, None]]):
     datum = file_load(file, cleanrange=cleans)
     datas.append(datum)
 
@@ -44,7 +47,7 @@ for vals in zip(SNRLIST, labels):
 
 path = pathlib.Path('figures/sinistro/')
 if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True) 
+    path.mkdir(parents=True, exist_ok=True)
 
 fig, ax = plt.subplots(figsize=(24, 16))
 colors = ['#00A800', '#C40000', '#270C0C', '#491B4F', '#000C74', '#0074A6']

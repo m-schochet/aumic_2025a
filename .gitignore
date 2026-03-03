@@ -12,3 +12,4 @@ unsure/*
 2_analysis/lco_photometry/figures/fits/*
 2_analysis/lco_photometry/mcmc/joint_contrasts/*
 2_analysis/lco_photometry/mcmc/mcmc_joint_but_sep.ipynb
+2_analysis/lco_photometry/mcmc/jointmcmc.py

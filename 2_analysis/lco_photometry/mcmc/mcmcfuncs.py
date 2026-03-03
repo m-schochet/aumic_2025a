@@ -1,6 +1,6 @@
-from glob import glob
-import os
-import pathlib
+"""Copied from `lco_functions.py` to bring all the 
+necessary functions for our MCMC samplers into the folder"""
+
 from astropy.io import ascii as asc
 import lightkurve as lk
 import numpy as np
@@ -78,9 +78,9 @@ def muscat_lks(filelist, normalize = False):
     fluxerr_list = [fluxerr['rel_flux_err_T1'].tolist() for fluxerr in filelist]
     for day, flux, error in zip(day_list, flux_list, fluxerr_list):
         d = d + day
-        fl = fl + flux 
+        fl = fl + flux
         err = err + error
-    if normalize==True:
+    if normalize is True:
         return lk.LightCurve(time=d, flux=fl, flux_err=err).normalize()
     return lk.LightCurve(time=d, flux=fl, flux_err=err)
 
@@ -103,22 +103,24 @@ def binned_lc(tlist, flist, elist, norm=False):
         if num==0:
             flux_counter+=flist[num]
             date_counter+=dates
-            error_counter+=elist[num]     
+            error_counter+=elist[num]
             num_counter+=1
         else:
-            datediffs = np.diff(tlist) 
+            datediffs = np.diff(tlist)
             if datediffs[num-1] > 0.45:
-                if ((flux_counter!=0) & (num_counter!=0)):
-                    returned_binnedlc.loc[len(returned_binnedlc)] = [flux_counter/num_counter, date_counter/num_counter, error_counter/num_counter]
+                if flux_counter!=0 and num_counter!=0:
+                    returned_binnedlc.loc[len(returned_binnedlc)] = \
+                        [flux_counter/num_counter, date_counter/num_counter, \
+                         error_counter/num_counter]
                 date_counter, flux_counter, num_counter, error_counter  = 0, 0, 0, 0
             else:
                 flux_counter+=flist[num]
                 date_counter+=dates
-                error_counter+=elist[num]     
+                error_counter+=elist[num]
                 num_counter+=1
-    flist = [val for val in returned_binnedlc['flux'].values]
-    elist = [val for val in returned_binnedlc['errs'].values]
-    tlist = [val for val in returned_binnedlc['times'].values]
+    flist = list(returned_binnedlc['flux'].values)
+    elist = list(returned_binnedlc['errs'].values)
+    tlist = list(returned_binnedlc['times'].values)
     final = lk.LightCurve(time=tlist, flux=flist, flux_err=elist)
     if norm:
         final = final.normalize()
