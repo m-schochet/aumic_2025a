@@ -1,4 +1,4 @@
-"""This notebook takes our output AIJ Sinistro light curves 
+"""This script takes our output AIJ Sinistro light curves 
 and plots them with minimal data cleaning"""
 
 import os

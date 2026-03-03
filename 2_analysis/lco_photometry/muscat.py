@@ -1,4 +1,5 @@
 """No preprocessing LCO MuSCAT light curve creation and plotting."""
+
 import pathlib
 import os
 from glob import glob
@@ -19,7 +20,7 @@ def set_rcparams():
             plt.rcParams[tab['key'][i]] = str(tab['val'][i])
 set_rcparams()
 
-COMMONPATH = '../../data/lco_aumic/'
+COMMONPATH = '../../data/lco_aumic/muscat'
 G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) \
               for FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
 removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 700, 0, 0],  [0, 0, 12, 0, 0, 0]]

@@ -8,7 +8,6 @@ from astropy.io import ascii as asc
 import numpy as np
 from mcmcfuncs import muscat_lks
 
-
 os.environ["OMP_NUM_THREADS"] = "8"
 
 if not os.path.exists("muscat_im"):
@@ -22,7 +21,7 @@ pathlist = sorted(glob(os.path.join(PATH, "*")))
 PATH59, PATH79, PATH97 = pathlist
 del PATH, pathlist
 
-COMMONPATH = '../../../data/lco_aumic/'
+COMMONPATH = '../../../data/lco_aumic/muscat'
 G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) for \
               FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
 removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0],  [0, 0, 12, 0, 0, 0]]
