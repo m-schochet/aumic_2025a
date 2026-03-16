@@ -35,8 +35,6 @@ JWSTDAYS = [(2460818.3330352814, 2460818.7497526538), (2460835.259565584, 246083
 
 TESS95 = [(2460881, 2460907)]
 
-# Sinistro Data processing
-
 # Unbinned Sinistro (for R band)
 COMMONPATH = '../../data/lco_aumic/lcs_posttwirl/'
 paths = sorted([os.path.join(COMMONPATH, specific) for \
@@ -54,6 +52,8 @@ BDATA, UDATA, VDATA, GDATA, IDATA, RDATA = datas
 
 RPUNBINNED, RSNR = create_lc(*RDATA)
 RPUNBINNED = RPUNBINNED.normalize()
+RPUNBINNED.time = RPUNBINNED.time-57000
+del BDATA, UDATA, VDATA, GDATA, IDATA, RDATA
 
 ## Binned Sinistro
 RPUNFOLDED = pd.read_csv('../../data/lco_aumic/binned_sinistro/rp.csv')
@@ -78,7 +78,7 @@ BLC, ULC, VLC, GPLC, IPLC, RPLC = sinistrolcs
 
 """MuSCAT data processing"""
 
-MUSCATPATH = '../../data/lco_aumic/'
+MUSCATPATH = '../../data/lco_aumic/muscat/'
 G, R, I, Z = [sorted(glob(os.path.join(MUSCATPATH, FIL))) for \
               FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
 removals = [[0, 43, 1, 1, 0, 0], [0, 1, 1, 0, 0, 0], \
@@ -208,9 +208,10 @@ stella_lc_og.scatter(ax=ax1, s=100, c="#353434", \
 
 # LCO data
 RPUNFOLDEDLC.scatter(ax=ax1, s=100,  label='Binned r\' (LCO Sinistro)', \
-                     c="#D0B658", rasterized=True)
-RPUNBINNED.scatter(ax=ax1, s=100, label='Unbinned r\'', alpha=0.5, c="#D0B658", rasterized=True)
-ZSLC_MUSC.scatter(ax=ax1, s=100, label='z\' (LCO MuSCAT)', c="#BA0016", rasterized=True)
+                     c="#C80101", rasterized=True)
+RPUNBINNED.scatter(ax=ax1, s=100, label='Unbinned r\'', 
+                   alpha=0.5, c="#C80101", rasterized=True)
+ZSLC_MUSC.scatter(ax=ax1, s=100, label='z\' (LCO MuSCAT)', c="#71000D", rasterized=True)
 
 # Now the lower subplots with the LCO Sinistro Data
 lowerplots = [curve.errorbar(ax=axs, markersize=5, fmt='o', elinewidth=2, capsize=5,
