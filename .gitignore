@@ -1,7 +1,4 @@
-.DS_Store
+*.DS_Store
 unsure/*
-2_analysis/.DS_Store
-2_analysis/tess/.DS_Store
-2_analysis/lco_photometry/.DS_Store
 2_analysis/lco_photometry/for-meir.ipynb
 2_analysis/lco_spectra/*
