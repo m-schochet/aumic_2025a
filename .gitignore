@@ -1,10 +1,12 @@
 *.DS_Store
 unsure/*
-2_analysis/lco_photometry/for-meir.ipynb
+data/*
 2_analysis/lco_spectra/*
+2_analysis/lco_photometry/figures*
+2_analysis/lco_photometry/for-meir.ipynb
 2_analysis/lco_photometry/mcmc/*
-2_analysis/tess/fig2_contrasts.png
-2_analysis/tess/temp_zoomin_contrasts.png
+2_analysis/tess/figures/*
+2_analysis/tess/stella/*
 *.png
 *.pkl
 *.xls
