@@ -22,7 +22,7 @@ def file_len(path):
     return len(data)
 
 def file_load(path, cleanrange=None, full=False):
-    """Load a path of LCO .fits file to plot the light curve
+    """Load several LCO .fits file to plot a light curve
 
     Args:
         path (str):  filepath to .xls file
@@ -35,18 +35,17 @@ def file_load(path, cleanrange=None, full=False):
         tuple: Arrays of JD, relative flux, flux error, and flux SNR.
     """
     data = asc.read(path)
-    data.sort(keys='rel_flux_T1')
-    if cleanrange:
-        if cleanrange[0] is None or cleanrange[1] is None:
-            if cleanrange[0] is None:
-                data = data[:cleanrange[1]]
-            else:
-                data = data[cleanrange[0]:]
-        else:
-            data = data[cleanrange[0]:cleanrange[1]]
+    data.sort(keys='rel_flux_err_T1')
+    data = data[data['rel_flux_err_T1'] < 5*np.median(data['rel_flux_err_T1'])]
+    data = data[data['rel_flux_err_C2'] < 5*np.median(data['rel_flux_err_C2'])]
+    data = data[data['rel_flux_err_C3'] < 5*np.median(data['rel_flux_err_C3'])]
+    data = data[data['rel_flux_T1'] > 1] 
+    data = data[data['rel_flux_SNR_T1'] > 25]
     data.sort(keys='J.D.-2400000')
+
     if full is True:
         return data
+    
     return data['J.D.-2400000'], data['rel_flux_T1'], \
         data['rel_flux_err_T1'], data['rel_flux_SNR_T1']
 

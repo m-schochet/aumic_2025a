@@ -1,5 +1,4 @@
 """No preprocessing LCO MuSCAT light curve creation and plotting."""
-
 import pathlib
 import os
 from glob import glob
@@ -7,7 +6,6 @@ import matplotlib.pyplot as plt
 from astropy.table import Table
 from astropy.io import ascii as asc
 from lco_functions import muscat_lks
-
 
 os.chdir(pathlib.Path.cwd())
 def set_rcparams():
@@ -23,7 +21,7 @@ set_rcparams()
 COMMONPATH = '../../data/lco_aumic/muscat'
 G, R, I, Z = [sorted(glob(os.path.join(COMMONPATH, FIL))) \
               for FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
-removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 700, 0, 0],  [0, 0, 12, 0, 0, 0]]
+removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0],  [0, 0, 12, 0, 0, 0]]
 lightcurves = []
 for variablelist in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
     filt, filelist, removelist = variablelist
@@ -34,10 +32,9 @@ for variablelist in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
     lightcurves.append(muscat_lks(filt_objs, normalize=True))
 GPLC, RPLC, IPLC, ZSLC = lightcurves
 
-path = pathlib.Path('figures/muscat/')
-if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True)
-
+SAVEPATH = pathlib.Path('figures/muscat/')
+if not os.path.exists(SAVEPATH):
+    SAVEPATH.mkdir(parents=True, exist_ok=True)
 
 fig, ax = plt.subplots(2, 2, figsize=(20, 12), layout='constrained')
 axs = ax.flatten()
@@ -49,6 +46,6 @@ for i, (lc, color, title) in enumerate(zip([GPLC, RPLC, IPLC, ZSLC], ['green', '
     axs[i].label_outer()
 fig.supxlabel('Time (JD - 2457000)', fontsize=30)
 fig.supylabel('Normalized Flux', fontsize=30)
-fig.savefig('figures/muscat/muscat_lcs.png', dpi=300)
+fig.savefig(os.path.join(SAVEPATH, 'muscat_lcs.png'), dpi=300)
 plt.clf()
 plt.close(fig)

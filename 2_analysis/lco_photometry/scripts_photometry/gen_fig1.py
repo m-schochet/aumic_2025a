@@ -24,44 +24,44 @@ def set_rcparams():
             plt.rcParams[tab['key'][i]] = str(tab['val'][i])
 set_rcparams()
 
+# Space-based data observation windows
 HSTDAYS = [(2460809.7770374413, 2460810.10588031), (2460818.233912621, 2460818.5666751266), \
            (2460826.4921415113, 2460826.8228429067), (2460835.2038892913, 2460835.5353429066)]
-
 CHEOPSDAYS = [(2460827.4291018597, 2460827.738845379), (2460826.6806421145, 2460827.381607217), \
               (2460834.964947009, 2460835.133426169), (2460835.1618256704, 2460835.817190319)]
-
 JWSTDAYS = [(2460818.3330352814, 2460818.7497526538), (2460835.259565584, 2460835.676293359), \
             (2460809.8923711404, 2460810.3091083206), (2460826.7961735446, 2460827.21288887)]
-
 TESS95 = [(2460881, 2460907)]
+
 
 # Unbinned Sinistro (for R band)
 COMMONPATH = '../../data/lco_aumic/lcs_posttwirl/'
 paths = sorted([os.path.join(COMMONPATH, specific) for \
                 specific in os.listdir(COMMONPATH) if specific.endswith('.xls')])
+# output order is B, U, V, gp, ip, rp
 
-lens = [file_len(path) for path in [paths[1], paths[4]]]
 datas = []
-for file, cleans in zip(paths, [[None, None], [2, lens[0]-13], \
-                                [None, None], [2, None], \
-                                [28, lens[1]-1], [1, None]]):
-    datum = file_load(file, cleanrange=cleans)
+for file in paths:
+    datum = file_load(file)
     datas.append(datum)
 
 BDATA, UDATA, VDATA, GDATA, IDATA, RDATA = datas
+
 
 RPUNBINNED, RSNR = create_lc(*RDATA)
 RPUNBINNED = RPUNBINNED.normalize()
 RPUNBINNED.time = RPUNBINNED.time-57000
 del BDATA, UDATA, VDATA, GDATA, IDATA, RDATA
 
-## Binned Sinistro
+
+# Binned Sinistro
 RPUNFOLDED = pd.read_csv('../../data/lco_aumic/binned_sinistro/rp.csv')
 RPUNFOLDEDLC = lk.LightCurve(time=RPUNFOLDED['time']-57000, \
                              flux=RPUNFOLDED['flux'], \
                              flux_err=RPUNFOLDED['flux_err']).normalize()
 
-## Folded Sinistro
+
+# Phase-folded Sinistro
 FOLDEDPATH = '../../data/lco_aumic/folded_sinistro/'
 paths = sorted([os.path.join(FOLDEDPATH, specific) for \
                 specific in os.listdir(FOLDEDPATH) if specific.endswith('.csv')])
@@ -76,13 +76,12 @@ for band in foldedlcs:
                                      flux_err=band['flux_err']).normalize())
 BLC, ULC, VLC, GPLC, IPLC, RPLC = sinistrolcs
 
-"""MuSCAT data processing"""
 
+# MuSCAT data processing
 MUSCATPATH = '../../data/lco_aumic/muscat/'
 G, R, I, Z = [sorted(glob(os.path.join(MUSCATPATH, FIL))) for \
               FIL in ['muscat_gp*', 'muscat_rp*', 'muscat_ip*', 'muscat_zs_*']]
-removals = [[0, 43, 1, 1, 0, 0], [0, 1, 1, 0, 0, 0], \
-            [0, 0, 0, 700, 0, 0], [0, 0, 12, 0, 0, 0]]
+removals = [[0, 43, 1, 1, 0, 0],  [0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0],  [0, 0, 12, 0, 0, 0]]
 lightcurves = []
 for vari in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
     filt, filelist, removelist = vari
@@ -94,6 +93,7 @@ for vari in zip(['G', 'R', 'I', 'Z'], [G, R, I, Z], removals):
 GPLC_MUSC, RPLC_MUSC, IPLC_MUSC, ZSLC_MUSC = lightcurves
 
 
+# TESS Data
 """This code utilizes the output TESS 120s light curve 
 after assigning a stella flare probabilities to each data point. 
 This requires running the 2_analysis/tess/stella_probability.ipynb
@@ -122,7 +122,7 @@ folded_params = [np.ascontiguousarray(param, dtype=np.float64) for param in \
 x_og, y_og, yerr_og_scaled, yerr_og_not = og_params
 x, y, yerr_scaled, yerr = folded_params
 
-"""Now we'll make the 2-sine wave model to our stella TESS light curve"""
+# Now we'll make the 2-sine wave model to our stella TESS light curve
 
 parameters_2term = [np.pi/70, np.max(y) - np.min(y), 3, (np.max(y) - np.min(y))/2, 3, np.max(y)]
 
@@ -144,15 +144,16 @@ def model_sine2(xes, omega, amp, phase, amp2, phase2, offset):
     """
 
     return amp*np.sin(omega * xes + phase) + amp2*np.sin(omega/2 * xes + phase2) + offset
+
 popt, pcov = curve_fit(model_sine2, x.tolist(), y,
                   p0=parameters_2term,
                   maxfev=50000)
 
+# Plot the 2-sine wave model
 fig = plt.figure(figsize=(16, 8))
 ax = plt.subplot(1, 1, 1)
 ax.plot(x, y, label='TESS', color='k')
 ax.plot(x, model_sine2(x, *popt), 'g--', label='2 sine Fit')
-
 print(f'Parameters for 2-sine fit are: \nω={popt[0]:.8} \
        \n(sin of f) A1={popt[1]:.8f}, φ1={popt[2]:.8f} \
        \n(sin of f/2) A2={popt[3]:.8f}, φ2={popt[4]:.8f}. \
@@ -162,19 +163,19 @@ ax.set_ylabel('TESS Normalized Flux')
 ax.set_xlabel('Phase')
 ax.legend(markerscale=10)
 
+SAVEPATH_GEN = pathlib.Path('figures')
+if not os.path.exists(SAVEPATH_GEN):
+    SAVEPATH_GEN.mkdir(parents=True, exist_ok=True)
 
-path = pathlib.Path('figures')
-if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True)
+SAVEPATH_TESS = pathlib.Path('figures/tess')
+if not os.path.exists(SAVEPATH_TESS):
+    SAVEPATH_TESS.mkdir(parents=True, exist_ok=True)
 
-path2 = pathlib.Path('figures/tess')
-if not os.path.exists(path2):
-    path2.mkdir(parents=True, exist_ok=True)
-
-fig.savefig('figures/tess/2sine_fit_tess.png', dpi=300)
+fig.savefig(os.path.join(SAVEPATH_TESS, '2sine_fit_tess.png'), dpi=300)
 plt.clf()
 plt.close()
 
+# Now make "Figure 1"
 fig = plt.figure(constrained_layout=True, figsize=(30, 16), facecolor='w')
 spec = gridspec.GridSpec(ncols=3, nrows=3, figure=fig)
 
@@ -238,6 +239,6 @@ for num, ax in enumerate(plt.gcf().axes):
     if num==0:
         continue
     ax.label_outer()
-fig.savefig('figures/fig1_lco_aumic_photometry.png', dpi=300)
+fig.savefig(os.path.join(SAVEPATH_GEN, 'fig1_lco_aumic_photometry.png'), dpi=300)
 plt.clf()
 plt.close()

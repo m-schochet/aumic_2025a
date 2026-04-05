@@ -1,5 +1,4 @@
 """This program takes our base CHEOPS light curves and plots them with minimal data cleaning"""
-
 import os
 import pathlib
 from glob import glob
@@ -27,16 +26,11 @@ for index, image in enumerate(cheops_im):
     cheops_dat = Table(fits.getdata(image))
     cheops_lcs.append(cheops_dat)
 
-    fig = plt.figure(figsize=(14, 5), constrained_layout=True)
-spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
-
-ax1 = fig.add_subplot(spec[0, :])
-
 may_31 = cheops_lcs[:2]
 june_8 = cheops_lcs[2:4]
 
-def combine_cheops(samedate_datalist):
-    """Combine multiple CHEOPS light curves from the same date into one light curve."""
+def compile_cheops(samedate_datalist):
+    """Compile a CHEOPS light curve from a night's observation file."""
     combined_time = np.array([])
     combined_flux = np.array([])
     combined_fluxerr = np.array([])
@@ -49,13 +43,16 @@ def combine_cheops(samedate_datalist):
     error = combined_fluxerr
     return lk.LightCurve(time=time, flux=flux, flux_err=error)
 
-path = pathlib.Path('figures/cheops/')
-if not os.path.exists(path):
-    path.mkdir(parents=True, exist_ok=True)
+SAVEPATH = pathlib.Path('figures/cheops/')
+if not os.path.exists(SAVEPATH):
+    SAVEPATH.mkdir(parents=True, exist_ok=True)
 
-combined_cheops_531 = combine_cheops(may_31).normalize()
-combined_cheops_68 = combine_cheops(june_8).normalize()
+combined_cheops_531 = compile_cheops(may_31).normalize()
+combined_cheops_68 = compile_cheops(june_8).normalize()
 
+fig = plt.figure(figsize=(14, 5), constrained_layout=True)
+spec = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
+ax1 = fig.add_subplot(spec[0, :])
 combined_cheops_531.scatter(ax=ax1, label='CHEOPS May 31', color='black', alpha=0.7)
 combined_cheops_68.scatter(ax=ax1, label='CHEOPS June 8', color='gray', alpha=0.7)
 ax1.set_xlabel('')
@@ -63,4 +60,4 @@ ax1.set_ylabel('')
 fig.supylabel('Normalized Flux')
 fig.supxlabel('JD-2457000')
 ax1.legend(loc='best', markerscale=15, fontsize=14)
-fig.savefig('figures/cheops/combined_cheops.png', dpi=300)
+fig.savefig(os.path.join(SAVEPATH, 'combined_cheops.png'), dpi=300)
